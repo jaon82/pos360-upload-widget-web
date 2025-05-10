@@ -6,7 +6,8 @@ on:
       - main
 
 env:
-  AWS_S3_BUCKET: jaon-upload-widget-web-static
+  AWS_S3_STATIC_BUCKET: jaon-upload-widget-web-static
+  AWS_S3_CDN_BUCKET: jaon-upload-widget-web-cdn
   SOURCE_DIST: ./dist
 
 jobs:
@@ -44,6 +45,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2.0.1
 
-      - name: Sync files to S3
-        id: sync-to-s3
-        run: aws s3 sync ${{env.SOURCE_DIST}} s3://${{env.AWS_S3_BUCKET}}/ --delete
+      - name: Sync files to S3 Static
+        id: sync-to-s3-static
+        run: aws s3 sync ${{env.SOURCE_DIST}} s3://${{env.  AWS_S3_STATIC_BUCKET}}/ --delete
+
+      - name: Sync files to S3 CDN
+        id: sync-to-s3-cdn
+        run: aws s3 sync ${{env.SOURCE_DIST}} s3://${{env.AWS_S3_CDN_BUCKET}}/ --delete
