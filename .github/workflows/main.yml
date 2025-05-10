@@ -1,4 +1,4 @@
-name: Deploy tp S3
+name: Deploy to S3/Vercel
 
 on:
   push:
