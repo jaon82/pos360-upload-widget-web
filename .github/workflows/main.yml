@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         id: install-dependencies
-        run: npm ci --only=prod
+        run: npm install
 
       - name: Build app
         id: build-app
