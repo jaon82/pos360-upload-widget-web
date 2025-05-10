@@ -116,7 +116,7 @@ export const useUploads = create<UploadState, [["zustand/immer", never]]>(
 
     function addUploads(files: File[]) {
       for (const file of files) {
-        const uploadId = crypto.randomUUID();
+        const uploadId = Date.now.toString();
         const upload: Upload = {
           name: file.name,
           file,
