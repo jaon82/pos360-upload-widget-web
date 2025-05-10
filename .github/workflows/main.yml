@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Checkout
         id: checkout
-        uses: action/checkout@v4
+        uses: actions/checkout@v4
 
       - name: Install Node.js
         id: install-node
