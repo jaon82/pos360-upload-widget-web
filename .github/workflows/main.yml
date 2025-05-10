@@ -6,9 +6,11 @@ on:
       - main
 
 env:
-  AWS_S3_STATIC_BUCKET: jaon-upload-widget-web-static
-  AWS_S3_CDN_BUCKET: jaon-upload-widget-web-cdn
-  SOURCE_DIST: ./dist
+  #   AWS_S3_STATIC_BUCKET: jaon-upload-widget-web-static
+  #   AWS_S3_CDN_BUCKET: jaon-upload-widget-web-cdn
+  #   SOURCE_DIST: ./dist
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   deploy:
@@ -25,34 +27,50 @@ jobs:
           node-version: 20
           cache: "npm"
 
-      - name: Install dependencies
-        id: install-dependencies
-        run: npm install
+      #   - name: Install dependencies
+      #     id: install-dependencies
+      #     run: npm install
+
+      #   - name: Build app
+      #     id: build-app
+      #     run: npm run build
+
+      #   - name: Configure AWS Credentials
+      #     id: configure-aws-credentials
+      #     uses: aws-actions/configure-aws-credentials@v4
+      #     with:
+      #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #       aws-region: ${{ vars.AWS_REGION }}
+
+      #   - name: Login Amazon ECR
+      #     id: login-ecr
+      #     uses: aws-actions/amazon-ecr-login@v2.0.1
+
+      #   - name: Sync files to S3 Static
+      #     id: sync-to-s3-static
+      #     run: aws s3 sync ${{env.SOURCE_DIST}} s3://${{env.  AWS_S3_STATIC_BUCKET}}/ --delete
+
+      #   - name: Sync files to S3 CDN
+      #     id: sync-to-s3-cdn
+      #     run: aws s3 sync ${{env.SOURCE_DIST}} s3://${{env.AWS_S3_CDN_BUCKET}}/ --delete
+
+      #   - name: Invalidate CDN Cache
+      #     id: invalidate-cdn-cache
+      #     run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+
+      - name: Install Vercel
+        id: install-vercel
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel config
+        id: pull-vercel-config
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build app
         id: build-app
-        run: npm run build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Configure AWS Credentials
-        id: configure-aws-credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Login Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2.0.1
-
-      - name: Sync files to S3 Static
-        id: sync-to-s3-static
-        run: aws s3 sync ${{env.SOURCE_DIST}} s3://${{env.  AWS_S3_STATIC_BUCKET}}/ --delete
-
-      - name: Sync files to S3 CDN
-        id: sync-to-s3-cdn
-        run: aws s3 sync ${{env.SOURCE_DIST}} s3://${{env.AWS_S3_CDN_BUCKET}}/ --delete
-
-      - name: Invalidate CDN Cache
-        id: invalidate-cdn-cache
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+      - name: Deploy app
+        id: deploy-app
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
