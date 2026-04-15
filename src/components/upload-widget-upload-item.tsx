@@ -19,6 +19,7 @@ export function UploadWidgetUploadItem({
   const retryUpload = useUploads((store) => store.retryUpload);
 
   const progress = Math.min(
+    100,
     upload.compressedSizeInBytes
       ? Math.round(
           (upload.uploadSizeInBytes * 100) / upload.compressedSizeInBytes
